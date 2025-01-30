@@ -3,12 +3,13 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 def fPC (y, yhat):
     return np.mean(y == yhat)
+
 def measureAccuracyOfPredictors (predictors, X, y):
     n = X.shape[0]
     m = len(predictors)
 
-    preds = np.zeros((n, m))
-    for j, (r1, c1, r2, c2) in enumerate(predictors):
+    preds = np.zeros((n, m)) #zero mat size of X along 0 dim and preds
+    for j, (r1, c1, r2, c2) in enumerate(predictors): 
         preds[:, j] = (X[:, r1, c1] > X[:, r2, c2]).astype(int)
 
     yhat = (np.mean(preds, axis=1) > 0.5).astype(int)
@@ -17,14 +18,13 @@ def measureAccuracyOfPredictors (predictors, X, y):
 def stepwiseRegression (trainingFaces, trainingLabels, testingFaces,
 testingLabels, feats=6):
     n, img_size, _ = trainingFaces.shape  # assumes image of shape n by 24 px by 24 px as per line 73
-
     feat = []
-
     for j in range(feats):
         best_acc = 0
         best_feat = None
-        r1g, c1g, r2g, c2g = np.meshgrid(np.arange(img_size), np.arange(img_size), np.arange(img_size), np.arange(img_size), indexing='ij')
-        # need to flatten grids that I made
+        r1g, c1g, r2g, c2g = np.meshgrid(np.arange(img_size), np.arange(img_size), np.arange(img_size), np.arange(img_size), indexing='ij') # makes cooridnate grids by taking 4 id arrays (np.arange(img_size)) and generates 4d grids. ij arg makes sure first 2 dims can walk through with i,j
+        #effectively, all possible combos of r1 and c1, r2 and c2
+        # need to flatten grids that were made from 4d coordinate grids to 1d np arrays so we have lists of pixel pair combos
         r1g = r1g.ravel()
         c1g = c1g.ravel()
         r2g = r2g.ravel()
@@ -42,7 +42,7 @@ testingLabels, feats=6):
                 best_feat = feature_candidate
 
         feat.append(best_feat)
-        print(f'Round{j+1} picked {best_feat} that had accuracy {best_acc:.4f}')
+        print(f'Round{j+1} picked {best_feat} that had accuracy {best_acc:.4f}') #assume that accuracy here refers to train acc, test is computed zero shot from test img
 
     train_acc = measureAccuracyOfPredictors(feat, trainingFaces, trainingLabels)
     test_acc = measureAccuracyOfPredictors(feat, testingFaces, testingLabels)
@@ -109,9 +109,9 @@ if __name__ == "__main__":
     plt.figure()
     plt.plot(accuracy_results['n'], accuracy_results['training_accuracy'], label="Training Accuracy")
     plt.plot(accuracy_results['n'], accuracy_results['testing_accuracy'], label="Testing Accuracy")
-    plt.xlabel("Number of Training Examples (n)")
+    plt.xlabel("Number of Examples (n)")
     plt.ylabel("Accuracy")
-    plt.title("Training vs. Testing Accuracy as a Function of n")
+    plt.title("Training vs. Testing Accuracy as F(n)")
     plt.legend()
     plt.grid(True)
     plt.show()

@@ -1,7 +1,6 @@
 import numpy as np
 
 def problem1 (A, B, C):
-
     return A @ B - C
 
 def problem2 (A):
